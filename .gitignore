@@ -1,3 +1,4 @@
 *.o
 .curses_valgrind_suppress_leaks.supp
 OldMakefile
+*.conways

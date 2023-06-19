@@ -1,6 +1,5 @@
 #include "game.h"
 #include "draw.h"
-#include "filehandler.h"
 #include "config.h"
 
 #define TRUE 1
@@ -24,8 +23,6 @@ void game_loop(WINDOW *mainwin, WINDOW *fieldwin, playfield *field) {
 
   // declare cursor x_pos and y_pos
   int x_pos, y_pos;
-
-  char *filename_str,  *title_str;
 
   GAMELOOP:while (playing) {
 
@@ -105,13 +102,7 @@ void game_loop(WINDOW *mainwin, WINDOW *fieldwin, playfield *field) {
       case 'W':
       case 'w':
         getyx(fieldwin, y_pos, x_pos);
-        filename_str = get_string_input(mainwin, "Write filename: ");
-        title_str = get_string_input(mainwin, "Title of design: ");
-        curs_set(0);
-        write_to_file(filename_str, title_str, *field);
-        print_message(mainwin, "Writing to file...");
-        free(filename_str);
-        free(title_str);
+        write_to_file_display(mainwin, fieldwin, *field);
         wait(250);
         print_message(mainwin, "Edit Mode");
         wmove(fieldwin, y_pos, x_pos);
@@ -120,16 +111,7 @@ void game_loop(WINDOW *mainwin, WINDOW *fieldwin, playfield *field) {
       case 'R':
       case 'r':
         getyx(fieldwin, y_pos, x_pos);
-        filename_str = get_string_input(mainwin, "Read filename: ");
-        curs_set(0);
-        if (read_from_file(mainwin, fieldwin, filename_str, field) == 0) {
-          print_message(mainwin, "Reading from file...");
-        } else {
-          wait(500);
-          print_message(mainwin, "Couldn't read from file");
-          wait(500);
-        }
-        free(filename_str);
+        read_from_file_display(mainwin, fieldwin, field);
         wait(250);
         print_message(mainwin, "Edit Mode");
         wmove(fieldwin, y_pos, x_pos);

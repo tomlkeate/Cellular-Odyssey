@@ -1,4 +1,5 @@
 #include "draw.h"
+#include "filehandler.h"
 #include "config.h"
 #include <string.h>
 
@@ -43,7 +44,6 @@ void draw_title(WINDOW *mainwin) {
 
 void draw_game_title(WINDOW *mainwin, char * title) {
   mvwaddstr(mainwin, 1, ((getmaxx(mainwin)-1) / 2) - strlen(title)/2, title);
-  free(title);
   touchwin(mainwin);
   wrefresh(mainwin);
 }
@@ -148,6 +148,12 @@ void clear_messages(WINDOW *mainwin) {
   draw_title(mainwin);
 }
 
+void clear_title(WINDOW *mainwin) {
+  wmove(mainwin, 1, (getmaxx(mainwin)-1)/2 - 10);
+  wclrtoeol(mainwin);
+  draw_title(mainwin);
+}
+
 int get_int_input(WINDOW *mainwin, char *prompt) {
   clear_messages(mainwin);
 
@@ -203,4 +209,66 @@ void print_message(WINDOW *mainwin, char *prompt) {
 
   mvwaddstr(mainwin, 1, (getmaxx(mainwin) - 1) - strlen(prompt) - 3, prompt);
   wrefresh(mainwin);
+}
+
+int write_to_file_display(WINDOW *mainwin, WINDOW *fieldwin, const playfield field) {
+  (void) fieldwin;
+  char *file_name,  *title;
+  file_name = get_string_input(mainwin, "Write filename: ");
+
+  if (file_name[0] == '\0') {
+    free(file_name);
+    print_message(mainwin, "Canceling..");
+    return -2;
+  }
+  title = get_string_input(mainwin, "Title of design: ");
+  if (title[0] == '\0') {
+    strcpy(title, "Untitled");
+  }
+
+  curs_set(0);
+  print_message(mainwin, "Writing to file...");
+
+  char *file_type = ".conways";
+  char real_file_name[strlen(file_name) + strlen(file_type)];
+  strcpy(real_file_name, file_name);
+  strcat(real_file_name, file_type);
+
+  int return_value = write_to_file(mainwin, real_file_name, title, field);
+  free(file_name);
+  free(title);
+
+  return return_value;
+}
+
+int read_from_file_display(WINDOW *mainwin, WINDOW *fieldwin, playfield *field) {
+  clear_title(mainwin);
+  char *file_name = get_string_input(mainwin, "Read filename: ");
+  if (file_name[0] == '\0') {
+    print_message(mainwin, "Canceling..");
+    free(file_name);
+    return -2;
+  }
+
+  char *file_type = ".conways";
+  char real_file_name[strlen(file_name) + strlen(file_type)];
+  strcpy(real_file_name, file_name);
+  strcat(real_file_name, file_type);
+
+  curs_set(0);
+
+  int return_value = read_from_file(mainwin, real_file_name, field);
+  if (return_value == 0) {
+    print_message(mainwin, "Reading from file...");
+  } else {
+    wait(500);
+    print_message(mainwin, "Couldn't read from file");
+    wait(500);
+  }
+
+  free(file_name);
+  draw_field(mainwin, fieldwin, *field);
+  update_display(mainwin, fieldwin);
+
+  return return_value;
 }
