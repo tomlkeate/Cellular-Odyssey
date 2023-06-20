@@ -11,6 +11,13 @@
 ./cellular-odyssey
 ```
 or
+**_Make Project_**
+#### If on debain based distro and have apt:
+```
+sudo apt install make
+sudo apt install gcc
+```
+#### To Make Run
 ```
 make run
 ```
@@ -43,6 +50,8 @@ make run
 * n, then type how many, to place n number of cells randomly.
 * i to place down cell under cursor.
 * x to remove cell under cursor.
+* f fills the board
+* c clears the board
 
 ### Writing and Reading from File
 * **Must be in Edit Mode**
@@ -82,3 +91,7 @@ make run
 ### I built this project for fun.
 ### I am using MIT license.
 ### You are free to fork this project.
+### Contributions are welcome
+
+### TO-DO
+- [ ] ***Create help menu***
